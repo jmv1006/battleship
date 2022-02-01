@@ -1,8 +1,8 @@
-const testFactory = require('../modules/game.js')
+const testBoardCoordinates = require('../modules/game.js')
 
 
-test('hit stuff', () => {
-    expect(testFactory()).toBe('Sunk');
+test('coordinates', () => {
+    expect(testBoardCoordinates()).toBe(Array);
 });
 
 

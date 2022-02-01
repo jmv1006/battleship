@@ -1,41 +1,39 @@
+const ship = (shipLength, hitLocations, sunkStatus) => {
+  for (let i = 0; i < shipLength; i++) {
+    hitLocations.push(i);
+  }
 
-function game() {
-    createShips();
-}
+  const hit = (pos) => {
+    hitLocations.splice(pos, 1, "X");
+    isSunk();
+  };
 
-function createShips() {
-    const ship = (shipLength, hitLocations, sunkStatus) => {
-        let hits = 0;
+  const isSunk = () => {
+    const allEqual = (arr) => arr.every((val) => val === arr[0]);
+    const result = allEqual(hitLocations);
 
-        const isSunk = () => {
-            console.log('ded')
-            sunkStatus = 'Sunk';
-        };
-
-        const hit = () => {
-            hits++
-            console.log(hits);
-            if(hits === shipLength) {
-                isSunk();
-            }
-        };
-
-        return {hitLocations, sunkStatus, hit}
-    };
-
-    const carrier = ship(5, 0, 'notSunk');
-    carrier.hit();
-    carrier.hit();
-    carrier.hit();
-    carrier.hit();
-    carrier.hit();
-
-    /*
-    const battleship = ship('Battleship', 4);
-    const cruiser = ship('Cruiser', 3);
-    const submarine = ship('Submarine', 3);
-    const destroyer = ship('Destroyer', 2);
-    */
+    if (result == true) {
+      obj.sunkStatus = "Sunk";
+    }
+  };
+  const obj = { shipLength, hitLocations, sunkStatus, hit };
+  return obj;
 };
 
-export {game};
+const carrier = ship(5, [], "notSunk");
+const battleship = ship(4, [], "notSunk");
+const cruiser = ship(3, [], "notSunk");
+const submarine = ship(3, [], "notSunk");
+const destroyer = ship(2, [], "notSunk");
+
+function testFactory() {
+  let testShip = ship(5, [], "notSunk");
+  testShip.hit(0);
+  testShip.hit(1);
+  testShip.hit(2);
+  testShip.hit(3);
+  testShip.hit(4);
+  return testShip.sunkStatus;
+}
+
+module.exports = testFactory;

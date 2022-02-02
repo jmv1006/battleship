@@ -41,8 +41,14 @@ let battleship;
 let cruiser;
 let submarine;
 let destroyer;
+
+let computerBoard;
+let computer;
+
+let user;
+let userBoard;
 //<----- Gameboard factory ----->
-const gameboard = (allShipsSunk) => {
+const gameboard = (carrier, destroyer, submarine, battleship, cruiser, allShipsSunk) => {
   let boardArray = [];
   const createBoard = () => {
     for (let i = 1; i < 11; i++) {
@@ -80,6 +86,7 @@ const gameboard = (allShipsSunk) => {
     carrierCoords.motherShip = "carrier";
     populatedCoordinates.push(carrierCoords);
     ships.push(carrier);
+    obj.carrier = carrier;
 
     battleship = ship(4, [], "notSunk");
     const battleshipCoords = [
@@ -91,6 +98,7 @@ const gameboard = (allShipsSunk) => {
     battleshipCoords.motherShip = "battleship";
     populatedCoordinates.push(battleshipCoords);
     ships.push(battleship);
+    obj.battleship = battleship;
 
     cruiser = ship(3, [], "notSunk");
     const cruiserCoords = [
@@ -101,6 +109,7 @@ const gameboard = (allShipsSunk) => {
     cruiserCoords.motherShip = "cruiser";
     populatedCoordinates.push(cruiserCoords);
     ships.push(cruiser);
+    obj.cruiser = cruiser;
 
     submarine = ship(3, [], "notSunk");
     const submarineCoords = [
@@ -111,6 +120,7 @@ const gameboard = (allShipsSunk) => {
     submarineCoords.motherShip = "submarine";
     populatedCoordinates.push(submarineCoords);
     ships.push(submarine);
+    obj.submarine = submarine;
 
     destroyer = ship(2, [], "notSunk");
     const destroyerCoords = [
@@ -120,8 +130,9 @@ const gameboard = (allShipsSunk) => {
     destroyerCoords.motherShip = "destroyer";
     populatedCoordinates.push(destroyerCoords);
     ships.push(destroyer);
+    obj.destroyer = destroyer;
 
-    allShipsSunk = false;
+    obj.allShipsSunk = false;
   };
 
   const recieveAttack = (coordinates) => {
@@ -214,15 +225,79 @@ const gameboard = (allShipsSunk) => {
     recieveAttack,
     missedCoordinates,
     checkIfAllShipsSunk,
+    carrier,
+    destroyer,
+    submarine,
+    battleship,
+    cruiser,
     allShipsSunk,
   };
   return obj;
 };
 
-const player = () => {
-  //player factory
+const player = (name, randomCoordinates) => {
+  const createPlayer = (name) => {
+    obj.name = name;
+  };
+
+  let usedCoordinates = [[20,20]];
+  const computerMakeMove = () => {
+    let generatedCoordinates = [];
+    let coord1 = Math.floor(Math.random() * 9)
+    let coord2 = Math.floor(Math.random() * 9)
+
+    for(let j = 0; j < usedCoordinates.length; j++) {
+      if(usedCoordinates[j][0] === coord1 && usedCoordinates[j][1] === coord2) {
+        //do nothing
+      } else {
+        let usedCoordinateSet = [coord1, coord2];
+        usedCoordinates.push(usedCoordinateSet);
+        makeMove();
+      };
+    };
+  
+    function makeMove() {
+      generatedCoordinates.push(coord1, coord2);
+      obj.randomCoordinates = generatedCoordinates;
+
+      if(obj.name === 'Computer') {
+        userBoard.recieveAttack(generatedCoordinates);
+      };
+    };
+
+  };
+
+  const obj = {
+    name,
+    createPlayer,
+    computerMakeMove,
+    randomCoordinates
+  };
+  return obj;
 };
 
+function testGame() {
+  userBoard = gameboard();
+  userBoard.createBoard();
+  userBoard.generateShips();
+
+  computerBoard = gameboard();
+  computerBoard.createBoard();
+  computerBoard.generateShips();
+  computerBoard.carrier.sinkShip();
+  computerBoard.submarine.sinkShip();
+  computerBoard.destroyer.sinkShip();
+  computerBoard.cruiser.sinkShip();
+  computerBoard.battleship.sinkShip();
+  computerBoard.checkIfAllShipsSunk();
+
+  computer = player();
+  computer.createPlayer('Computer');
+  //computer.computerMakeMove();
+  return computerBoard.allShipsSunk;
+};
+
+/*
 function testBoardCoordinates() {
   const board = gameboard();
   board.createBoard();
@@ -233,7 +308,10 @@ function testBoardCoordinates() {
   battleship.sinkShip();
   cruiser.sinkShip();
   board.checkIfAllShipsSunk();
+  //const computerBoard = gameboard();
+  //computerBoard.createBoard();
   return board.allShipsSunk;
 }
+*/
 
-module.exports = testBoardCoordinates;
+module.exports = testGame;

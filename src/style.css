@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri&display=swap');
+
+body {
+    padding-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+#header {
+    font-size: 4.5rem;
+    font-family: 'Bebas Neue';
+}
+
+#infoDisplay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.25rem;
+    font-family: 'Hind Siliguri', sans-serif;
+    width: 55%;
+    height: 3%;
+    border: 2px solid red;
+    background-color: #7d7d7d;
+}
+
+#boardsContainer {
+    width: 80%;
+    height: 60%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+}
+
+
+.board {
+    width: 27rem;
+    height: 27rem;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    cursor: pointer;
+}
+
+.userSquare {
+    border: 1px solid black;
+}
+
+.computerSquare {
+    border: 1px solid black;
+}
+
+#T {
+    background-color: red;
+}

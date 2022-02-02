@@ -1,3 +1,5 @@
+import { displayBoards } from "./domController.js";
+
 const ship = (shipLength, hitLocations, sunkStatus, coordinates) => {
   for (let i = 0; i < shipLength; i++) {
     hitLocations.push(i);
@@ -48,7 +50,14 @@ let computer;
 let user;
 let userBoard;
 //<----- Gameboard factory ----->
-const gameboard = (carrier, destroyer, submarine, battleship, cruiser, allShipsSunk) => {
+const gameboard = (
+  carrier,
+  destroyer,
+  submarine,
+  battleship,
+  cruiser,
+  allShipsSunk
+) => {
   let boardArray = [];
   const createBoard = () => {
     for (let i = 1; i < 11; i++) {
@@ -90,10 +99,10 @@ const gameboard = (carrier, destroyer, submarine, battleship, cruiser, allShipsS
 
     battleship = ship(4, [], "notSunk");
     const battleshipCoords = [
-      [5, 2],
-      [6, 2],
       [7, 2],
       [8, 2],
+      [9, 2],
+      [10, 2],
     ];
     battleshipCoords.motherShip = "battleship";
     populatedCoordinates.push(battleshipCoords);
@@ -113,9 +122,9 @@ const gameboard = (carrier, destroyer, submarine, battleship, cruiser, allShipsS
 
     submarine = ship(3, [], "notSunk");
     const submarineCoords = [
-      [4, 3],
-      [5, 3],
-      [6, 3],
+      [6, 7],
+      [7, 7],
+      [8, 7],
     ];
     submarineCoords.motherShip = "submarine";
     populatedCoordinates.push(submarineCoords);
@@ -164,9 +173,9 @@ const gameboard = (carrier, destroyer, submarine, battleship, cruiser, allShipsS
           let hitLocation = j;
           attack(shipName, coords, hitLocation);
           isHit = true;
-        };
-      };
-    };
+        }
+      }
+    }
   };
 
   const attackMissed = (location) => {
@@ -218,11 +227,39 @@ const gameboard = (carrier, destroyer, submarine, battleship, cruiser, allShipsS
     }
   };
 
+  const markPopulatedSpaces = () => {
+
+    for(let i = 0; i < populatedCoordinates.length; i++) {
+      getCoords(i);
+    };
+
+    function getCoords(num) {
+      for (let j = 0; j < populatedCoordinates[num].length; j++) {
+        let populatedCoord1 = populatedCoordinates[num][j][0];
+        let populatedCoord2 = populatedCoordinates[num][j][1];
+        let populatedCoords = [populatedCoord1, populatedCoord2];
+        markSpaces(populatedCoords);
+      };
+    };
+
+    function markSpaces(coords) {
+      for (let j = 0; j < boardArray.length; j++) {
+        let coord1 = coords[0];
+        let coord2 = coords[1];
+        if (boardArray[j][0] == coord1 && boardArray[j][1] == coord2) {
+          boardArray[j] = "T";
+        };
+      };
+    };
+
+  };
+
   const obj = {
     boardArray,
     createBoard,
     generateShips,
     recieveAttack,
+    populatedCoordinates,
     missedCoordinates,
     checkIfAllShipsSunk,
     carrier,
@@ -231,6 +268,7 @@ const gameboard = (carrier, destroyer, submarine, battleship, cruiser, allShipsS
     battleship,
     cruiser,
     allShipsSunk,
+    markPopulatedSpaces
   };
   return obj;
 };
@@ -240,78 +278,59 @@ const player = (name, randomCoordinates) => {
     obj.name = name;
   };
 
-  let usedCoordinates = [[20,20]];
+  let usedCoordinates = [[20, 20]];
   const computerMakeMove = () => {
     let generatedCoordinates = [];
-    let coord1 = Math.floor(Math.random() * 9)
-    let coord2 = Math.floor(Math.random() * 9)
+    let coord1 = Math.floor(Math.random() * 9);
+    let coord2 = Math.floor(Math.random() * 9);
 
-    for(let j = 0; j < usedCoordinates.length; j++) {
-      if(usedCoordinates[j][0] === coord1 && usedCoordinates[j][1] === coord2) {
+    for (let j = 0; j < usedCoordinates.length; j++) {
+      if (
+        usedCoordinates[j][0] === coord1 &&
+        usedCoordinates[j][1] === coord2
+      ) {
         //do nothing
       } else {
         let usedCoordinateSet = [coord1, coord2];
         usedCoordinates.push(usedCoordinateSet);
         makeMove();
-      };
-    };
-  
+      }
+    }
+
     function makeMove() {
       generatedCoordinates.push(coord1, coord2);
       obj.randomCoordinates = generatedCoordinates;
 
-      if(obj.name === 'Computer') {
+      if (obj.name === "Computer") {
         userBoard.recieveAttack(generatedCoordinates);
-      };
-    };
-
+      }
+    }
   };
 
   const obj = {
     name,
     createPlayer,
     computerMakeMove,
-    randomCoordinates
+    randomCoordinates,
   };
   return obj;
 };
 
-function testGame() {
+function setUpNewGame() {
   userBoard = gameboard();
   userBoard.createBoard();
   userBoard.generateShips();
+  userBoard.markPopulatedSpaces();
 
   computerBoard = gameboard();
   computerBoard.createBoard();
   computerBoard.generateShips();
-  computerBoard.carrier.sinkShip();
-  computerBoard.submarine.sinkShip();
-  computerBoard.destroyer.sinkShip();
-  computerBoard.cruiser.sinkShip();
-  computerBoard.battleship.sinkShip();
-  computerBoard.checkIfAllShipsSunk();
-
-  computer = player();
-  computer.createPlayer('Computer');
-  //computer.computerMakeMove();
-  return computerBoard.allShipsSunk;
+  computerBoard.markPopulatedSpaces();
+  displayBoards(userBoard.boardArray, computerBoard.boardArray);
 };
 
-/*
-function testBoardCoordinates() {
-  const board = gameboard();
-  board.createBoard();
-  board.generateShips();
-  destroyer.sinkShip();
-  carrier.sinkShip();
-  submarine.sinkShip();
-  battleship.sinkShip();
-  cruiser.sinkShip();
-  board.checkIfAllShipsSunk();
-  //const computerBoard = gameboard();
-  //computerBoard.createBoard();
-  return board.allShipsSunk;
-}
-*/
 
-module.exports = testGame;
+function gameLoop() {
+  setUpNewGame();
+}
+export {gameLoop, gameboard, player};

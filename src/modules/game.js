@@ -99,9 +99,9 @@ const gameboard = (
 
     battleship = ship(4, [], "notSunk");
     const battleshipCoords = [
-      [7, 2],
-      [8, 2],
-      [9, 2],
+      [10, 3],
+      [10, 4],
+      [10, 5],
       [10, 2],
     ];
     battleshipCoords.motherShip = "battleship";
@@ -155,13 +155,7 @@ const gameboard = (
 
     for (let i = 0; i < populatedCoordinates.length; i++) {
       getCoordinates(i, coords);
-    }
-
-    if (isHit === false) {
-      attackMissed(coords);
-    } else {
-      //do nothing
-    }
+    };
 
     function getCoordinates(num, coords) {
       for (let j = 0; j < populatedCoordinates[num].length; j++) {
@@ -173,8 +167,14 @@ const gameboard = (
           let hitLocation = j;
           attack(shipName, coords, hitLocation);
           isHit = true;
-        }
-      }
+        };
+      };
+    };
+
+    if (isHit === false) {
+      attackMissed(coords);
+    } else {
+      //do nothing
     }
   };
 
@@ -209,6 +209,8 @@ const gameboard = (
         boardArray[j] = "X";
       }
     }
+
+    console.log('It is a HIT!')
   };
 
   const checkIfAllShipsSunk = () => {
@@ -247,7 +249,7 @@ const gameboard = (
         let coord1 = coords[0];
         let coord2 = coords[1];
         if (boardArray[j][0] == coord1 && boardArray[j][1] == coord2) {
-          boardArray[j] = "T";
+          obj.boardArray[j].status = "T";
         };
       };
     };
@@ -333,4 +335,8 @@ function setUpNewGame() {
 function gameLoop() {
   setUpNewGame();
 }
-export {gameLoop, gameboard, player};
+
+function initiateAttack(coordinates) {
+  computerBoard.recieveAttack(coordinates);
+};
+export {gameLoop, initiateAttack, gameboard, player};

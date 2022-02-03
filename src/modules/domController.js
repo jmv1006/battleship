@@ -49,19 +49,9 @@ function activateBoardEventListeners() {
       const tempArr = []
       tempArr.push(coord1, coord2);
       initiateAttack(tempArr);
-      //turnOffEventListeners();
     })
   };
 };
 
-/*
-function turnOffEventListeners() {
-  const squareClassArr = document.getElementsByClassName('square');
-
-  for(let i = 0; i < squareClassArr.length; i++) { 
-    squareClassArr[i].removeEventListener();
-  };
-}
-*/
 
   export {displayBoards};

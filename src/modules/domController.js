@@ -9,7 +9,7 @@ function displayBoards(arr1, arr2) {
       userBoardDOM.appendChild(square);
       square.classList = 'userSquare';
       square.parent = arr1[i].status;
-      square.id = arr1[i];
+      square.id = `u${arr1[i]}`;
       square.coord1 = arr1[i][0];
       square.coord2 = arr1[i][1];
 
@@ -27,7 +27,7 @@ function displayBoards(arr1, arr2) {
       computerBoardDOM.appendChild(square);
       square.classList = 'square';
       square.parent = arr2[i].status;
-      square.id = arr2[i];
+      square.id = `c${arr2[i]}`;
       square.coord1 = arr1[i][0];
       square.coord2 = arr1[i][1];
 

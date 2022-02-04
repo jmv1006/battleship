@@ -10,34 +10,54 @@ body {
     margin: 0;
     width: 100vw;
     height: 100vh;
+    background-color: #525252;
+    overflow-x: hidden;
 }
 
 #header {
     font-size: 4.5rem;
     font-family: 'Bebas Neue';
+    color: white;
+    margin: 0;
 }
 
 #infoDisplay {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.25rem;
+    font-size: 1.45rem;
+    font-weight: bold;
     font-family: 'Hind Siliguri', sans-serif;
-    width: 55%;
-    height: 3%;
-    border: 2px solid red;
+    width: 60%;
+    height: 4%;
     background-color: #7d7d7d;
+    margin: 0;
+    border-radius: 1rem;
 }
 
 #boardsContainer {
     width: 80%;
-    height: 60%;
+    height: 55%;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 2rem;
+    margin: 0%;
 }
 
+.boardWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: .25rem;
+}
+
+.boardHeader {
+    font-family: 'Bebas Neue';
+    color: white;
+    font-size: 2rem;
+}
 
 .board {
     width: 27rem;
@@ -47,17 +67,49 @@ body {
     grid-template-rows: repeat(10, 1fr);
     grid-column-gap: 0px;
     grid-row-gap: 0px;
+    margin: 0;
 }
 
 .square {
-    border: 1px solid black;
+    border: 1px solid white;
+    cursor: pointer;
+}
+
+.square:hover {
+    border: 1px solid white;
+    background-color: #58c947;
     cursor: pointer;
 }
 
 .userSquare {
-    border: 1px solid black;
+    border: 1px solid white;
 }
 
 .markedSquare {
+    border: 1px solid white;
     background-color: red;
+}
+
+.hitSpace {
+    border: 1px solid white;
+    background-color: black;
+}
+
+.missedSpace {
+    border: 1px solid white;
+    background-color: blue;
+}
+
+@media only screen and (max-width: 925px) {
+    #boardsContainer {
+        padding-top: 2rem;
+        width: 80%;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        margin: 0%;
+    }
 }

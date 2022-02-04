@@ -46,11 +46,11 @@ let destroyer;
 
 let computerBoard;
 let computer;
-
 let user;
 let userBoard;
 
 let isHit;
+let currentPlayer;
 //<----- Gameboard factory ----->
 const gameboard = (
   carrier,
@@ -85,7 +85,13 @@ const gameboard = (
   const missedCoordinates = [];
   const ships = [];
 
-  const generateShips = (carrierCoords, battleshipCoords, cruiserCoords, submarineCoords, destroyerCoords) => {
+  const generateShips = (
+    carrierCoords,
+    battleshipCoords,
+    cruiserCoords,
+    submarineCoords,
+    destroyerCoords
+  ) => {
     carrier = ship(5, [], "notSunk");
     const inputtedCarrierCoords = carrierCoords;
     inputtedCarrierCoords.motherShip = "carrier";
@@ -129,13 +135,13 @@ const gameboard = (
   };
 
   //<---- tests if coordinates are populated with a ship by tapping into the 'Populated Coordinates' Array ---->
-   //<-- Identifies whether or not certain coordinates are hit. If not, missed coordinates are stored -->
+  //<-- Identifies whether or not certain coordinates are hit. If not, missed coordinates are stored -->
   const testIfHitShip = (coords) => {
     isHit = false;
 
     for (let i = 0; i < populatedCoordinates.length; i++) {
       getCoordinates(i, coords);
-    };
+    }
 
     function getCoordinates(num, coords) {
       for (let j = 0; j < populatedCoordinates[num].length; j++) {
@@ -147,9 +153,9 @@ const gameboard = (
           let hitLocation = j;
           attack(shipName, coords, hitLocation);
           isHit = true;
-        };
-      };
-    };
+        }
+      }
+    }
 
     if (isHit === false) {
       attackMissed(coords);
@@ -160,10 +166,12 @@ const gameboard = (
 
   const attackMissed = (location) => {
     missedCoordinates.push(location);
+    markHitSpace(location, 'Miss');
   };
 
   //carries out attack and marks board location with 'X'
   const attack = (shipName, Coords, hitLocation) => {
+    markHitSpace(Coords, 'Hit');
     switch (shipName) {
       case "carrier":
         carrier.hit(hitLocation);
@@ -180,15 +188,15 @@ const gameboard = (
       case "destroyer":
         destroyer.hit(hitLocation);
         break;
-    };
+    }
 
     for (let j = 0; j < boardArray.length; j++) {
       let coord1 = Coords[0];
       let coord2 = Coords[1];
       if (boardArray[j][0] == coord1 && boardArray[j][1] == coord2) {
         boardArray[j] = "X";
-      };
-    };
+      }
+    }
   };
 
   const checkIfAllShipsSunk = () => {
@@ -207,11 +215,38 @@ const gameboard = (
     }
   };
 
-  const markPopulatedSpaces = () => {
 
-    for(let i = 0; i < populatedCoordinates.length; i++) {
-      getCoords(i);
+  const markHitSpace = (coords, hitOrMiss) => {
+    let coord1 = coords[0];
+    let coord2 = coords[1];
+    let coordString;
+
+    switch(hitOrMiss) {
+      case('Hit'):
+        if(currentPlayer === 'Computer') {
+          coordString = `u${coord1},${coord2}`;
+          document.getElementById(coordString).classList = 'hitSpace';
+        } else if (currentPlayer === 'User') {
+          coordString = `c${coord1},${coord2}`;
+          document.getElementById(coordString).classList = 'hitSpace';
+        };
+        break;
+      case('Miss'):
+      if(currentPlayer === 'Computer') {
+        coordString = `u${coord1},${coord2}`;
+        document.getElementById(coordString).classList = 'missedSpace';
+      } else if (currentPlayer === 'User') {
+        coordString = `c${coord1},${coord2}`;
+        document.getElementById(coordString).classList = 'missedSpace';
+      };
     };
+
+  };
+
+  const markPopulatedSpaces = () => {
+    for (let i = 0; i < populatedCoordinates.length; i++) {
+      getCoords(i);
+    }
 
     function getCoords(num) {
       for (let j = 0; j < populatedCoordinates[num].length; j++) {
@@ -219,8 +254,8 @@ const gameboard = (
         let populatedCoord2 = populatedCoordinates[num][j][1];
         let populatedCoords = [populatedCoord1, populatedCoord2];
         markSpaces(populatedCoords);
-      };
-    };
+      }
+    }
 
     function markSpaces(coords) {
       for (let j = 0; j < boardArray.length; j++) {
@@ -228,10 +263,9 @@ const gameboard = (
         let coord2 = coords[1];
         if (boardArray[j][0] == coord1 && boardArray[j][1] == coord2) {
           obj.boardArray[j].status = "T";
-        };
-      };
-    };
-
+        }
+      }
+    }
   };
 
   const obj = {
@@ -248,7 +282,7 @@ const gameboard = (
     battleship,
     cruiser,
     allShipsSunk,
-    markPopulatedSpaces
+    markPopulatedSpaces,
   };
   return obj;
 };
@@ -300,29 +334,72 @@ function setUpNewGame() {
   userBoard = gameboard();
   userBoard.createBoard();
   userBoard.generateShips(
-    [[2,2], [3,2], [4,2], [5,2], [6,2]],
-    [[1,4],[2,4],[3,4],[4,4]],
-    [[6,5],[7,5],[8,5]],
-    [[3,7],[4,7],[5,7]],
-    [[5,9],[6,9]]
+    [
+      [2, 2],
+      [3, 2],
+      [4, 2],
+      [5, 2],
+      [6, 2],
+    ],
+    [
+      [1, 4],
+      [2, 4],
+      [3, 4],
+      [4, 4],
+    ],
+    [
+      [6, 5],
+      [7, 5],
+      [8, 5],
+    ],
+    [
+      [3, 7],
+      [4, 7],
+      [5, 7],
+    ],
+    [
+      [5, 9],
+      [6, 9],
+    ]
   );
   userBoard.markPopulatedSpaces();
-  user = player('User');
+  user = player("User");
 
   computerBoard = gameboard();
   computerBoard.createBoard();
   computerBoard.generateShips(
-    [[2,2], [3,2], [4,2], [5,2], [6,2]],
-    [[1,4],[2,4],[3,4],[4,4]],
-    [[6,5],[7,5],[8,5]],
-    [[3,7],[4,7],[5,7]],
-    [[5,9],[6,9]]
+    [
+      [2, 2],
+      [3, 2],
+      [4, 2],
+      [5, 2],
+      [6, 2],
+    ],
+    [
+      [1, 4],
+      [2, 4],
+      [3, 4],
+      [4, 4],
+    ],
+    [
+      [6, 5],
+      [7, 5],
+      [8, 5],
+    ],
+    [
+      [3, 7],
+      [4, 7],
+      [5, 7],
+    ],
+    [
+      [5, 9],
+      [6, 9],
+    ]
   );
   computerBoard.markPopulatedSpaces();
-  computer = player('Computer');
+  computer = player("Computer");
   displayBoards(userBoard.boardArray, computerBoard.boardArray);
-};
-
+}
 
 function gameLoop() {
   setUpNewGame();
@@ -330,42 +407,39 @@ function gameLoop() {
 }
 
 function loopThroughGame() {
-  if(computerBoard.allShipsSunk === true || userBoard.allShipsSunk === true) {
+  if (computerBoard.allShipsSunk === true || userBoard.allShipsSunk === true) {
     //end game
   } else {
     //nada
-  };
-};
+  }
+}
 
 function userTurn() {
   //wait on user input
   if (isHit === true) {
     //mark board, check if sunk
-    console.log('User Hit');
     isHit = false;
     computerTurn();
   } else {
-    console.log('User Missed');
     computerTurn();
-  }
-
-}
+  };
+};
 
 function computerTurn() {
+  currentPlayer = 'Computer';
   computer.computerMakeMove();
   if (isHit === true) {
-    console.log('Computer Hit')
     //mark board, check if sunk
     isHit = false;
   } else {
     //nada
-    console.log('Computer missed')
-  };
-
+  }
 }
 
 function initiateAttack(coordinates) {
+  currentPlayer = 'User';
   computerBoard.recieveAttack(coordinates);
   userTurn();
 };
-export {gameLoop, initiateAttack, gameboard, player};
+
+export { gameLoop, initiateAttack, gameboard, player };

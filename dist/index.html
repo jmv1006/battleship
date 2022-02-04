@@ -7,6 +7,20 @@
   <body>
     <div id='header'>Battleship</div>
     <div id='infoDisplay'>USER'S TURN</div>
+    <div id="startUpBoardWrapper">
+      <div class='startUpBoardHeader'>YOUR BOARD</div>
+      <div id="startUpBoard"></div>
+    </div>
+    <button id="rotate">Rotate</button>
+    <div id="shipSelectWrapper">
+      <div id="shipsDisplay">
+        <div id="carrier" class='ship' draggable="true"></div>
+        <div id="battleship" class='ship' draggable="true" ></div>
+        <div id="cruiser" class='ship' draggable="true"></div>
+        <div id="submarine" class='ship' draggable="true"></div>
+        <div id="destroyer" class='ship' draggable="true"></div>
+      </div>
+    </div>
       <div id="boardsContainer">
         <div class="boardWrapper">
           <div class='boardHeader'>USER</div>
@@ -17,7 +31,6 @@
           <div class="board" id="computerBoard"></div>
         </div>
       </div>
-    
     <script src="main.js"></script>
   </body>
 </html>

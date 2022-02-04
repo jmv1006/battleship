@@ -1,4 +1,4 @@
-import { displayBoards } from "./domController.js";
+import { displayBoards, displayStartUpBoard, userShipSelect } from "./domController.js";
 
 const ship = (shipLength, hitLocations, sunkStatus, coordinates) => {
   for (let i = 0; i < shipLength; i++) {
@@ -85,45 +85,24 @@ const gameboard = (
   const missedCoordinates = [];
   const ships = [];
 
-  const generateShips = (
-    carrierCoords,
-    battleshipCoords,
-    cruiserCoords,
-    submarineCoords,
-    destroyerCoords
-  ) => {
+  const generateShips = () => {
     carrier = ship(5, [], "notSunk");
-    const inputtedCarrierCoords = carrierCoords;
-    inputtedCarrierCoords.motherShip = "carrier";
-    populatedCoordinates.push(inputtedCarrierCoords);
     ships.push(carrier);
     obj.carrier = carrier;
 
     battleship = ship(4, [], "notSunk");
-    const inputtedBattleshipCoords = battleshipCoords;
-    inputtedBattleshipCoords.motherShip = "battleship";
-    populatedCoordinates.push(inputtedBattleshipCoords);
     ships.push(battleship);
     obj.battleship = battleship;
 
     cruiser = ship(3, [], "notSunk");
-    const inputtedCruiserCoords = cruiserCoords;
-    inputtedCruiserCoords.motherShip = "cruiser";
-    populatedCoordinates.push(inputtedCruiserCoords);
     ships.push(cruiser);
     obj.cruiser = cruiser;
 
     submarine = ship(3, [], "notSunk");
-    const inputtedSubmarineCoords = submarineCoords;
-    inputtedSubmarineCoords.motherShip = "submarine";
-    populatedCoordinates.push(inputtedSubmarineCoords);
     ships.push(submarine);
     obj.submarine = submarine;
 
     destroyer = ship(2, [], "notSunk");
-    const inputtedDestroyerCoords = destroyerCoords;
-    inputtedDestroyerCoords.motherShip = "destroyer";
-    populatedCoordinates.push(inputtedDestroyerCoords);
     ships.push(destroyer);
     obj.destroyer = destroyer;
 
@@ -133,6 +112,34 @@ const gameboard = (
   const recieveAttack = (coordinates) => {
     testIfHitShip(coordinates);
   };
+
+  const giveShipsCoordinates = (
+    carrierCoords,
+    battleshipCoords,
+    cruiserCoords,
+    submarineCoords,
+    destroyerCoords
+  ) => {
+    const inputtedCarrierCoords = carrierCoords;
+    inputtedCarrierCoords.motherShip = "carrier";
+    populatedCoordinates.push(inputtedCarrierCoords);
+
+    const inputtedBattleshipCoords = battleshipCoords;
+    inputtedBattleshipCoords.motherShip = "battleship";
+    populatedCoordinates.push(inputtedBattleshipCoords);
+
+    const inputtedCruiserCoords = cruiserCoords;
+    inputtedCruiserCoords.motherShip = "cruiser";
+    populatedCoordinates.push(inputtedCruiserCoords);
+
+    const inputtedSubmarineCoords = submarineCoords;
+    inputtedSubmarineCoords.motherShip = "submarine";
+    populatedCoordinates.push(inputtedSubmarineCoords);
+
+    const inputtedDestroyerCoords = destroyerCoords;
+    inputtedDestroyerCoords.motherShip = "destroyer";
+    populatedCoordinates.push(inputtedDestroyerCoords);
+  }
 
   //<---- tests if coordinates are populated with a ship by tapping into the 'Populated Coordinates' Array ---->
   //<-- Identifies whether or not certain coordinates are hit. If not, missed coordinates are stored -->
@@ -225,19 +232,23 @@ const gameboard = (
       case('Hit'):
         if(currentPlayer === 'Computer') {
           coordString = `u${coord1},${coord2}`;
-          document.getElementById(coordString).classList = 'hitSpace';
+          const chosenCoord = document.getElementById(coordString);
+          chosenCoord.id = 'hitSpace';
         } else if (currentPlayer === 'User') {
           coordString = `c${coord1},${coord2}`;
-          document.getElementById(coordString).classList = 'hitSpace';
+          const chosenCoord = document.getElementById(coordString);
+          chosenCoord.id = 'hitSpace';
         };
         break;
       case('Miss'):
       if(currentPlayer === 'Computer') {
         coordString = `u${coord1},${coord2}`;
-        document.getElementById(coordString).classList = 'missedSpace';
+        const chosenCoord =  document.getElementById(coordString);
+        chosenCoord.id = 'missedSpace';
       } else if (currentPlayer === 'User') {
         coordString = `c${coord1},${coord2}`;
-        document.getElementById(coordString).classList = 'missedSpace';
+        const chosenCoord =  document.getElementById(coordString);
+        chosenCoord.id = 'missedSpace';
       };
     };
 
@@ -274,6 +285,7 @@ const gameboard = (
     generateShips,
     recieveAttack,
     populatedCoordinates,
+    giveShipsCoordinates,
     missedCoordinates,
     checkIfAllShipsSunk,
     carrier,
@@ -283,6 +295,7 @@ const gameboard = (
     cruiser,
     allShipsSunk,
     markPopulatedSpaces,
+    ships
   };
   return obj;
 };
@@ -333,6 +346,7 @@ const player = (name, randomCoordinates) => {
 function setUpNewGame() {
   userBoard = gameboard();
   userBoard.createBoard();
+  /*
   userBoard.generateShips(
     [
       [2, 2],
@@ -362,11 +376,14 @@ function setUpNewGame() {
       [6, 9],
     ]
   );
-  userBoard.markPopulatedSpaces();
+  */
+  //userBoard.markPopulatedSpaces();
+  userBoard.generateShips();
   user = player("User");
 
   computerBoard = gameboard();
   computerBoard.createBoard();
+  /*
   computerBoard.generateShips(
     [
       [2, 2],
@@ -396,14 +413,27 @@ function setUpNewGame() {
       [6, 9],
     ]
   );
-  computerBoard.markPopulatedSpaces();
+  */
+  //computerBoard.markPopulatedSpaces();
+  computerBoard.generateShips();
   computer = player("Computer");
-  displayBoards(userBoard.boardArray, computerBoard.boardArray);
+  //displayBoards(userBoard.boardArray, computerBoard.boardArray);
 }
 
 function gameLoop() {
   setUpNewGame();
-  loopThroughGame();
+  placeUserShipsDisplay();
+}
+
+function placeUserShipsDisplay() {
+  displayStartUpBoard(userBoard.boardArray);
+  userShipSelect();
+  //computerboard.palcerandomships\
+
+  //getusershiplocations
+  //userboard.giveShipsCoordinates(inputted locations)
+  //hide start up board
+  //displayBoards
 }
 
 function loopThroughGame() {
@@ -442,4 +472,4 @@ function initiateAttack(coordinates) {
   userTurn();
 };
 
-export { gameLoop, initiateAttack, gameboard, player };
+export { gameLoop, initiateAttack, gameboard, player,  };

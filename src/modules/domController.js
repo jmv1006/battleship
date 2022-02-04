@@ -1,5 +1,138 @@
 import {initiateAttack} from './game.js'
 
+let carrier;
+let battleship;
+let cruiser;
+let submarine;
+let destroyer;
+
+function userShipSelect() {
+  carrier = document.getElementById('carrier');
+  battleship = document.getElementById('battleship');
+  cruiser = document.getElementById('cruiser');
+  submarine = document.getElementById('submarine');
+  destroyer = document.getElementById('destroyer');
+
+  createShips(5, carrier);
+  createShips(4, battleship);
+  createShips(3, cruiser);
+  createShips(3, submarine);
+  createShips(2, destroyer);
+
+  carrier.length = 5;
+  battleship.length = 4;
+  cruiser.length = 3;
+  submarine.length = 3;
+  destroyer.length = 2;
+
+  function createShips(length, name) {
+    for(let i = 0; i < length; i++) {
+      const square = document.createElement('Div');
+      name.appendChild(square)
+      square.classList = 'startUpSquare';
+    };
+  };
+
+  let shipClass = document.getElementsByClassName('ship')
+  for(let i = 0; i < shipClass.length; i++) {
+    shipClass[i].addEventListener("dragstart", dragStart);
+  };
+
+  let currentRotation = 'Vertical';
+  let dragged;
+  let shipLength;
+
+  document.getElementById('rotate').addEventListener('click', function() {
+    if(currentRotation === 'Vertical') {
+      currentRotation = 'Horizontal';
+      document.getElementById('carrier').id = 'carrierHorizontal';
+      document.getElementById('battleship').id = 'battleshipHorizontal';
+      document.getElementById('cruiser').id = 'cruiserHorizontal';
+      document.getElementById('submarine').id = 'submarineHorizontal';
+      document.getElementById('destroyer').id = 'destroyerHorizontal';
+      document.getElementById('shipsDisplay').id = 'shipsDisplayHorizontal'
+      
+    } else if(currentRotation === 'Horizontal') {
+      currentRotation = 'Vertical';
+      document.getElementById('carrierHorizontal').id = 'carrier';
+      document.getElementById('battleshipHorizontal').id = 'battleship';
+      document.getElementById('cruiserHorizontal').id = 'cruiser';
+      document.getElementById('submarineHorizontal').id = 'submarine';
+      document.getElementById('destroyerHorizontal').id = 'destroyer';
+      document.getElementById('shipsDisplayHorizontal').id = 'shipsDisplay'
+    }
+  })
+
+  function dragStart(e) {
+    dragged = e.target;
+    shipLength = e.path[0].length
+  };
+
+  const startUpBoardSquares = document.getElementsByClassName('startUpBoardSquare');
+  for(let j = 0; j < startUpBoardSquares.length; j++) {
+    startUpBoardSquares[j].addEventListener('dragenter', dragEnter);
+    startUpBoardSquares[j].addEventListener('dragover', dragOver);
+    startUpBoardSquares[j].addEventListener('dragleave', dragLeave);
+    startUpBoardSquares[j].addEventListener('drop', drop);
+  };
+  
+
+  function dragEnter(e) {
+    e.preventDefault();
+    if (e.target.className == "startUpBoardSquare") {
+      
+    }
+  };
+  
+  function dragOver(e) {
+    e.preventDefault();
+    
+  };
+  
+  function dragLeave(e) {
+    
+  };
+  
+  function drop(e) {
+    e.preventDefault();
+    let id = e.dataTransfer.getData('id');
+    let xLocation = this.coord1;
+    let yLocation = this.coord2;
+    addShipToBoard();
+    let coords;
+
+    function addShipToBoard() {
+      if(currentRotation === 'Vertical') {
+        for(let i = 0; i < shipLength; i++) {
+          coords = `${xLocation},${yLocation + i}`;
+          document.getElementById(coords).className = 'markedSquare';
+        };
+      } else if(currentRotation === 'Horizontal') {
+        for(let i = 0; i < shipLength; i++) {
+          coords = `${xLocation + i},${yLocation}`;
+          document.getElementById(coords).className = 'markedSquare';
+        };
+      }
+    };
+
+
+
+  };
+
+};
+
+function displayStartUpBoard(arr) {
+  for(let i = 0; i < arr.length; i++) {
+    const startBoardDOM = document.getElementById('startUpBoard');
+    const square = document.createElement('div');
+    startBoardDOM.appendChild(square);
+    square.classList = 'startUpBoardSquare';
+    square.id = arr[i];
+    square.coord1 = arr[i][0]
+    square.coord2 = arr[i][1]
+  };
+};
+
 function displayBoards(arr1, arr2) {
     const userGrid = arr1.length
   
@@ -18,7 +151,6 @@ function displayBoards(arr1, arr2) {
       };
     };
   
-    
     const computerGrid = arr2.length;
   
     for(let i = 0; i < userGrid; i++) {
@@ -54,4 +186,4 @@ function activateBoardEventListeners() {
 };
 
 
-  export {displayBoards};
+export {displayBoards, displayStartUpBoard, userShipSelect}

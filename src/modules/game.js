@@ -346,45 +346,13 @@ const player = (name, randomCoordinates) => {
 function setUpNewGame() {
   userBoard = gameboard();
   userBoard.createBoard();
-  /*
-  userBoard.generateShips(
-    [
-      [2, 2],
-      [3, 2],
-      [4, 2],
-      [5, 2],
-      [6, 2],
-    ],
-    [
-      [1, 4],
-      [2, 4],
-      [3, 4],
-      [4, 4],
-    ],
-    [
-      [6, 5],
-      [7, 5],
-      [8, 5],
-    ],
-    [
-      [3, 7],
-      [4, 7],
-      [5, 7],
-    ],
-    [
-      [5, 9],
-      [6, 9],
-    ]
-  );
-  */
-  //userBoard.markPopulatedSpaces();
   userBoard.generateShips();
   user = player("User");
 
   computerBoard = gameboard();
   computerBoard.createBoard();
-  /*
-  computerBoard.generateShips(
+  computerBoard.generateShips();
+  computerBoard.giveShipsCoordinates(
     [
       [2, 2],
       [3, 2],
@@ -413,11 +381,7 @@ function setUpNewGame() {
       [6, 9],
     ]
   );
-  */
-  //computerBoard.markPopulatedSpaces();
-  computerBoard.generateShips();
   computer = player("Computer");
-  //displayBoards(userBoard.boardArray, computerBoard.boardArray);
 }
 
 function gameLoop() {
@@ -428,12 +392,21 @@ function gameLoop() {
 function placeUserShipsDisplay() {
   displayStartUpBoard(userBoard.boardArray);
   userShipSelect();
-  //computerboard.palcerandomships\
+}
 
-  //getusershiplocations
-  //userboard.giveShipsCoordinates(inputted locations)
-  //hide start up board
-  //displayBoards
+function getUserSelectedCoordinates(coords) {
+  userBoard.giveShipsCoordinates(coords[0], coords[1], coords[2], coords[3], coords[4]);
+  userBoard.markPopulatedSpaces();
+  computerBoard.markPopulatedSpaces();
+  displayMainGame();
+};
+
+function displayMainGame() {
+  document.getElementById('startUpBoardWrapper').style.display = 'none';
+  document.getElementById('rotate').style.display = 'none';
+  document.getElementById('shipSelectWrapper').style.display='none';
+  document.getElementById('boardsContainer').style.display = 'flex';
+  displayBoards(userBoard.boardArray, computerBoard.boardArray);
 }
 
 function loopThroughGame() {
@@ -472,4 +445,4 @@ function initiateAttack(coordinates) {
   userTurn();
 };
 
-export { gameLoop, initiateAttack, gameboard, player,  };
+export { gameLoop, initiateAttack, gameboard, player, getUserSelectedCoordinates  };

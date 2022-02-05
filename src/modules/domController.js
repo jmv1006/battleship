@@ -1,4 +1,4 @@
-import {initiateAttack} from './game.js'
+import {initiateAttack, getUserSelectedCoordinates} from './game.js'
 
 let carrier;
 let battleship;
@@ -12,6 +12,12 @@ function userShipSelect() {
   cruiser = document.getElementById('cruiser');
   submarine = document.getElementById('submarine');
   destroyer = document.getElementById('destroyer');
+
+  carrier.name = 'carrier';
+  battleship.name = 'battleship'
+  cruiser.name = 'cruiser';
+  submarine.name = 'submarine';
+  destroyer.name = 'destroyer';
 
   createShips(5, carrier);
   createShips(4, battleship);
@@ -41,17 +47,37 @@ function userShipSelect() {
   let currentRotation = 'Vertical';
   let dragged;
   let shipLength;
+  let shipName;
+  let storedCoords = [[],[],[],[],[]];
+  storedCoords[0].name = 'carrier';
+  storedCoords[1].name = 'battleship';
+  storedCoords[2].name = 'cruiser';
+  storedCoords[3].name = 'submarine';
+  storedCoords[4].name = 'destroyer';
+
+
+  shipClass[0].name = 'carrier';
+  shipClass[1].name = 'battleship';
+  shipClass[2].name = 'cruiser';
+  shipClass[3].name = 'submarine';
+  shipClass[4].name = 'destroyer';
 
   document.getElementById('rotate').addEventListener('click', function() {
     if(currentRotation === 'Vertical') {
       currentRotation = 'Horizontal';
-      document.getElementById('carrier').id = 'carrierHorizontal';
-      document.getElementById('battleship').id = 'battleshipHorizontal';
-      document.getElementById('cruiser').id = 'cruiserHorizontal';
-      document.getElementById('submarine').id = 'submarineHorizontal';
-      document.getElementById('destroyer').id = 'destroyerHorizontal';
+      carrier.id = 'carrierHorizontal';
+      battleship.id = 'battleshipHorizontal';
+      cruiser.id = 'cruiserHorizontal';
+      submarine.id = 'submarineHorizontal';
+      destroyer.id = 'destroyerHorizontal';
+
+      let shipClass = document.getElementsByClassName('ship');
+      shipClass[0].name = 'carrier';
+      shipClass[1].name = 'battleship';
+      shipClass[2].name = 'cruiser';
+      shipClass[3].name = 'submarine';
+      shipClass[4].name = 'destroyer';
       document.getElementById('shipsDisplay').id = 'shipsDisplayHorizontal'
-      
     } else if(currentRotation === 'Horizontal') {
       currentRotation = 'Vertical';
       document.getElementById('carrierHorizontal').id = 'carrier';
@@ -60,12 +86,13 @@ function userShipSelect() {
       document.getElementById('submarineHorizontal').id = 'submarine';
       document.getElementById('destroyerHorizontal').id = 'destroyer';
       document.getElementById('shipsDisplayHorizontal').id = 'shipsDisplay'
-    }
-  })
+    };
+  });
 
   function dragStart(e) {
     dragged = e.target;
     shipLength = e.path[0].length
+    shipName = this.name;
   };
 
   const startUpBoardSquares = document.getElementsByClassName('startUpBoardSquare');
@@ -92,31 +119,58 @@ function userShipSelect() {
   function dragLeave(e) {
     
   };
-  
+
+  let shipsPlaced = 0;
+
   function drop(e) {
     e.preventDefault();
-    let id = e.dataTransfer.getData('id');
     let xLocation = this.coord1;
     let yLocation = this.coord2;
-    addShipToBoard();
     let coords;
+    let coordsArr;
+    let shipArrPosition;
+    addShipToBoard();
+    shipsPlaced++;
 
     function addShipToBoard() {
+      console.log(shipsPlaced)
       if(currentRotation === 'Vertical') {
-        for(let i = 0; i < shipLength; i++) {
-          coords = `${xLocation},${yLocation + i}`;
-          document.getElementById(coords).className = 'markedSquare';
+        if(yLocation + (shipLength - 1) > 10){
+          //do nothing
+        } else {
+          for(let i = 0; i < shipLength; i++) {
+            coords = `${xLocation},${yLocation + i}`;
+            coordsArr = [xLocation, (yLocation + i)];
+            document.getElementById(coords).className = 'markedSquare';
+            document.getElementById(shipName).style.display = 'none';
+            shipArrPosition = storedCoords.findIndex(item => item.name == shipName);
+            storedCoords[shipArrPosition].push(coordsArr);
+          };
         };
       } else if(currentRotation === 'Horizontal') {
-        for(let i = 0; i < shipLength; i++) {
-          coords = `${xLocation + i},${yLocation}`;
-          document.getElementById(coords).className = 'markedSquare';
+        if(xLocation + (shipLength - 1) > 10) {
+          //do nothing
+        } else {
+          for(let i = 0; i < shipLength; i++) {
+            coords = `${xLocation + i},${yLocation}`;
+            coordsArr = [(xLocation + i), yLocation];
+            document.getElementById(coords).className = 'markedSquare';
+            document.getElementById(`${shipName}Horizontal`).style.display = 'none';
+            shipArrPosition = storedCoords.findIndex(item => item.name == shipName);
+            storedCoords[shipArrPosition].push(coordsArr);
+          };
         };
-      }
+      };
+
+      let storedCoordsArr = [];
+      if (shipsPlaced === 4) {
+        for(let i = 0; i < storedCoords.length; i++) {
+          storedCoordsArr.push(storedCoords[i])
+        };
+        getUserSelectedCoordinates(storedCoordsArr);
+      };
+
     };
-
-
-
   };
 
 };
@@ -131,6 +185,7 @@ function displayStartUpBoard(arr) {
     square.coord1 = arr[i][0]
     square.coord2 = arr[i][1]
   };
+  document.getElementById('infoDisplay').innerText = 'USER, PLACE YOUR SHIPS!'
 };
 
 function displayBoards(arr1, arr2) {

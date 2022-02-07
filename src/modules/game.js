@@ -1,4 +1,4 @@
-import { displayBoards, displayStartUpBoard, userShipSelect } from "./domController.js";
+import { displayBoards, displayStartUpBoard, userShipSelect, activateBoardEventListeners } from "./domController.js";
 
 const ship = (shipLength, hitLocations, sunkStatus, coordinates) => {
   for (let i = 0; i < shipLength; i++) {
@@ -159,7 +159,6 @@ const gameboard = (
           let shipName = populatedCoordinates[num].motherShip;
           let hitLocation = j;
           attack(shipName, coords, hitLocation);
-          isHit = true;
         }
       }
     }
@@ -178,6 +177,7 @@ const gameboard = (
 
   //carries out attack and marks board location with 'X'
   const attack = (shipName, Coords, hitLocation) => {
+    isHit = true;
     markHitSpace(Coords, 'Hit');
     switch (shipName) {
       case "carrier":
@@ -212,12 +212,12 @@ const gameboard = (
         obj.allShipsSunk = true;
       } else if (ships[i].sunkStatus === "notSunk") {
         obj.allShipsSunk = false;
-      }
-    }
+      };
+    };
 
-    if (allShipsSunk === true) {
-      //all ships are sunk
-    } else if (allShipsSunk === false) {
+    if (obj.allShipsSunk == true) {
+      console.log('Game Over!!');
+    } else if (obj.allShipsSunk == false) {
       //not all ships are sunk
     }
   };
@@ -227,28 +227,33 @@ const gameboard = (
     let coord1 = coords[0];
     let coord2 = coords[1];
     let coordString;
+    let chosenCoord;
 
     switch(hitOrMiss) {
       case('Hit'):
         if(currentPlayer === 'Computer') {
           coordString = `u${coord1},${coord2}`;
-          const chosenCoord = document.getElementById(coordString);
+          chosenCoord = document.getElementById(coordString);
           chosenCoord.id = 'hitSpace';
+          chosenCoord.classList = 'hitSquare';
         } else if (currentPlayer === 'User') {
           coordString = `c${coord1},${coord2}`;
-          const chosenCoord = document.getElementById(coordString);
+          chosenCoord = document.getElementById(coordString);
           chosenCoord.id = 'hitSpace';
+          chosenCoord.classList = 'hitSquare';
         };
         break;
       case('Miss'):
       if(currentPlayer === 'Computer') {
         coordString = `u${coord1},${coord2}`;
-        const chosenCoord =  document.getElementById(coordString);
+        chosenCoord =  document.getElementById(coordString);
         chosenCoord.id = 'missedSpace';
+        chosenCoord.classList = 'missedSquare';
       } else if (currentPlayer === 'User') {
         coordString = `c${coord1},${coord2}`;
-        const chosenCoord =  document.getElementById(coordString);
+        chosenCoord =  document.getElementById(coordString);
         chosenCoord.id = 'missedSpace';
+        chosenCoord.classList = 'missedSquare';
       };
     };
 
@@ -305,22 +310,25 @@ const player = (name, randomCoordinates) => {
     obj.name = name;
   };
 
-  let usedCoordinates = [[20, 20]];
+  let usedCoordinates = [[20,20]];
+
+  //issue is that function below is being called becaucse first case is true;
+
+  let generatedCoordinates;
+
   const computerMakeMove = () => {
-    let generatedCoordinates = [];
-    let coord1 = Math.floor(Math.random() * 9);
-    let coord2 = Math.floor(Math.random() * 9);
+    let coord1 = Math.floor(Math.random() * 10) + 1;
+    let coord2 = Math.floor(Math.random() * 10) + 1;
 
     for (let j = 0; j < usedCoordinates.length; j++) {
-      if (
-        usedCoordinates[j][0] === coord1 &&
-        usedCoordinates[j][1] === coord2
-      ) {
-        //do nothing
+      if ((usedCoordinates[j][0] === coord1 && usedCoordinates[j][1] === coord2)) {
+        //nothing
       } else {
         let usedCoordinateSet = [coord1, coord2];
         usedCoordinates.push(usedCoordinateSet);
+        generatedCoordinates = [];
         makeMove();
+        break;
       }
     }
 
@@ -330,6 +338,7 @@ const player = (name, randomCoordinates) => {
 
       if (obj.name === "Computer") {
         userBoard.recieveAttack(generatedCoordinates);
+
       }
     }
   };
@@ -407,6 +416,7 @@ function displayMainGame() {
   document.getElementById('shipSelectWrapper').style.display='none';
   document.getElementById('boardsContainer').style.display = 'flex';
   displayBoards(userBoard.boardArray, computerBoard.boardArray);
+  activateBoardEventListeners();
 }
 
 function loopThroughGame() {
@@ -418,12 +428,11 @@ function loopThroughGame() {
 }
 
 function userTurn() {
-  //wait on user input
   if (isHit === true) {
-    //mark board, check if sunk
-    isHit = false;
     computerTurn();
-  } else {
+    isHit = false;
+    computerBoard.checkIfAllShipsSunk();
+  } else if (isHit === false) {
     computerTurn();
   };
 };
@@ -432,10 +441,9 @@ function computerTurn() {
   currentPlayer = 'Computer';
   computer.computerMakeMove();
   if (isHit === true) {
-    //mark board, check if sunk
     isHit = false;
+    userBoard.checkIfAllShipsSunk();
   } else {
-    //nada
   }
 }
 

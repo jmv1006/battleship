@@ -133,7 +133,6 @@ function userShipSelect() {
     shipsPlaced++;
 
     function addShipToBoard() {
-      console.log(shipsPlaced)
       if(currentRotation === 'Vertical') {
         if(yLocation + (shipLength - 1) > 10){
           //do nothing
@@ -188,43 +187,44 @@ function displayStartUpBoard(arr) {
   document.getElementById('infoDisplay').innerText = 'USER, PLACE YOUR SHIPS!'
 };
 
+
 function displayBoards(arr1, arr2) {
-    const userGrid = arr1.length
-  
-    for(let i = 0; i < userGrid; i++) {
-      const userBoardDOM = document.getElementById('userBoard');
-      const square = document.createElement('div');
-      userBoardDOM.appendChild(square);
-      square.classList = 'userSquare';
-      square.parent = arr1[i].status;
-      square.id = `u${arr1[i]}`;
-      square.coord1 = arr1[i][0];
-      square.coord2 = arr1[i][1];
+  const userGrid = arr1.length
 
-      if(square.parent === 'T') {
-        square.classList = 'markedSquare';
-      };
-    };
-  
-    const computerGrid = arr2.length;
-  
-    for(let i = 0; i < userGrid; i++) {
-      const computerBoardDOM = document.getElementById('computerBoard');
-      const square = document.createElement('div');
-      computerBoardDOM.appendChild(square);
-      square.classList = 'square';
-      square.parent = arr2[i].status;
-      square.id = `c${arr2[i]}`;
-      square.coord1 = arr1[i][0];
-      square.coord2 = arr1[i][1];
+  for(let i = 0; i < userGrid; i++) {
+    const userBoardDOM = document.getElementById('userBoard');
+    const square = document.createElement('div');
+    userBoardDOM.appendChild(square);
+    square.classList = 'userSquare';
+    square.parent = arr1[i].status;
+    square.id = `u${arr1[i]}`;
+    square.coord1 = arr1[i][0];
+    square.coord2 = arr1[i][1];
 
-      if(square.parent === 'T') {
-        square.status = 'T';
-      };
+    if(square.parent === 'T') {
+      square.classList = 'markedSquare';
     };
-    activateBoardEventListeners();
-    //make an array with user and computer square, add event listener to get its parent then pass those coordinates onto gameboard object
+  };
+
+  const computerGrid = arr2.length;
+
+  for(let i = 0; i < userGrid; i++) {
+    const computerBoardDOM = document.getElementById('computerBoard');
+    const square = document.createElement('div');
+    computerBoardDOM.appendChild(square);
+    square.classList = 'square';
+    square.parent = arr2[i].status;
+    square.id = `c${arr2[i]}`;
+    square.coord1 = arr1[i][0];
+    square.coord2 = arr1[i][1];
+
+    if(square.parent === 'T') {
+      square.status = 'T';
+    };
+  };
 };
+
+
 
 function activateBoardEventListeners() {
   const squareClassArr = document.getElementsByClassName('square');
@@ -241,4 +241,4 @@ function activateBoardEventListeners() {
 };
 
 
-export {displayBoards, displayStartUpBoard, userShipSelect}
+export {displayBoards, displayStartUpBoard, userShipSelect, activateBoardEventListeners}
